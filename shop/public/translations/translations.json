@@ -4,7 +4,11 @@
       "more": "More"
     },
     "header": {
-      "menu__btn": "Menu"
+      "menu__btn": "Menu",
+      "search_products": "Search for products",
+      "search_infos": "Product name, category, type...",
+      "profile": "Profile",
+      "logout": "Logout"
     },
     "main_menu": {
       "catalog": "Catalog",
@@ -55,7 +59,11 @@
       "more": "Ещё"
     },
     "header": {
-      "menu__btn": "Меню"
+      "menu__btn": "Меню",
+      "search_products": "Поиск товаров",
+      "search_infos": "Название товаара, категория, тип...",
+      "profile": "Профиль",
+      "logout": "Выйти"
     },
     "main_menu": {
       "catalog": "Каталог",
