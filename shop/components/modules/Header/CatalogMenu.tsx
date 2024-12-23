@@ -4,7 +4,7 @@
 import { $catalogMenuIsOpen, closeCatalogMenu } from '@/context/modals'
 import { useLang } from '@/hooks/useLang'
 import { useMenuAnimation } from '@/hooks/useMenuAnimation'
-import { useStore } from 'effector-react'
+import { useUnit } from 'effector-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import Header from './Header'
@@ -12,13 +12,13 @@ import { removeOverflowHiddenFromBody } from '@/lib/utils/common'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import CatalogMenuButton from './CatalogMenuButton'
 import CatalogMenuList from './CatalogMenuList'
+import Accordion from '../Accordion/Accordion'
+import Link from 'next/link'
 
 const CatalogMenu = () => {
-  const catalogMenuIsOpen = useStore($catalogMenuIsOpen)
-  const [showClothList, setShowClothList] = useState(false)
-  const [showAccessoriesList, setShowAccessoriesList] = useState(false)
-  const [showSouvenirsList, setShowSouvenirsList] = useState(false)
-  const [showOfficeList, setShowOfficeList] = useState(false)
+  const catalogMenuIsOpen = useUnit($catalogMenuIsOpen)
+  const [activeListId, setActiveListId] = useState(0)
+
   const { lang, translations } = useLang()
   const { itemVariants, sideVariants, popupZIndex } = useMenuAnimation(
     2,
@@ -26,82 +26,97 @@ const CatalogMenu = () => {
   )
   const isMedia450 = useMediaQuery(450)
 
-  const handleShowClothList = () => {
-    setShowClothList(true)
-    setShowAccessoriesList(false)
-    setShowSouvenirsList(false)
-    setShowOfficeList(false)
-  }
-
-  const handleShowAccessoriesList = () => {
-    setShowClothList(false)
-    setShowAccessoriesList(true)
-    setShowSouvenirsList(false)
-    setShowOfficeList(false)
-  }
-
-  const handleShowSouvenirsList = () => {
-    setShowClothList(false)
-    setShowAccessoriesList(false)
-    setShowSouvenirsList(true)
-    setShowOfficeList(false)
-  }
-
-  const handleShowOfficeList = () => {
-    setShowClothList(false)
-    setShowAccessoriesList(false)
-    setShowSouvenirsList(false)
-    setShowOfficeList(true)
-  }
-
   const handleCloseMenu = () => {
     removeOverflowHiddenFromBody()
     closeCatalogMenu()
-    setShowClothList(false)
-    setShowAccessoriesList(false)
-    setShowOfficeList(false)
-    setShowSouvenirsList(false)
+    setActiveListId(0)
   }
+
+  const isActiveList = (id: number) => activeListId === id
 
   const items = [
     {
       name: translations[lang].main_menu.cloth,
       id: 1,
       items: [
-        translations[lang].comparison['t-shirts'],
-        translations[lang].comparison['long-sleeves'],
-        translations[lang].comparison.hoodie,
-        translations[lang].comparison.outerwear,
+        {
+          title: translations[lang].comparison['t-shirts'],
+          href: '/catalog/cloth?offset=0&type=t-shirts',
+          handleCloseMenu,
+        },
+        {
+          title: translations[lang].comparison['long-sleeves'],
+          href: '/catalog/cloth?offset=0&type=long-sleeves',
+          handleCloseMenu,
+        },
+        {
+          title: translations[lang].comparison.hoodie,
+          href: '/catalog/cloth?offset=0&type=hoodie',
+          handleCloseMenu,
+        },
+        {
+          title: translations[lang].comparison.outerwear,
+          href: '/catalog/cloth?offset=0&type=outerwear',
+          handleCloseMenu,
+        },
       ],
-      handler: handleShowClothList,
+      handler: () => setActiveListId(1),
     },
     {
       name: translations[lang].main_menu.accessories,
       id: 2,
       items: [
-        translations[lang].comparison.bags,
-        translations[lang].comparison.headdress,
-        translations[lang].comparison.umbrella,
+        {
+          title: translations[lang].comparison.bags,
+          href: '/catalog/accessories?offset=0&type=bags',
+          handleCloseMenu,
+        },
+        {
+          title: translations[lang].comparison.headdress,
+          href: '/catalog/accessories?offset=0&type=headdress',
+          handleCloseMenu,
+        },
+        {
+          title: translations[lang].comparison.umbrella,
+          href: '/catalog/accessories?offset=0&type=umbrella',
+          handleCloseMenu,
+        },
       ],
-      handler: handleShowAccessoriesList,
+      handler: () => setActiveListId(2),
     },
     {
       name: translations[lang].main_menu.souvenirs,
       id: 3,
       items: [
-        translations[lang].comparison['business-souvenirs'],
-        translations[lang].comparison['promotional-souvenirs'],
+        {
+          title: translations[lang].comparison['business-souvenirs'],
+          href: '/catalog/souvenirs?offset=0&type=business-souvenirs',
+          handleCloseMenu,
+        },
+        {
+          title: translations[lang].comparison['promotional-souvenirs'],
+          href: '/catalog/souvenirs?offset=0&type=promotional-souvenirs',
+          handleCloseMenu,
+        },
       ],
-      handler: handleShowSouvenirsList,
+      handler: () => setActiveListId(3),
     },
     {
       name: translations[lang].main_menu.office,
       id: 4,
       items: [
-        translations[lang].comparison.notebook,
-        translations[lang].comparison.pen,
+        {
+          title: translations[lang].comparison.notebook,
+          href: '/catalog/office?offset=0&type=notebook',
+          handleCloseMenu,
+        },
+        {
+          title: translations[lang].comparison.pen,
+          href: '/catalog/office?offset=0&type=pen',
+          handleCloseMenu,
+        },
       ],
-      handler: handleShowOfficeList,
+      handler: () => setActiveListId(4),
     },
   ]
 
@@ -169,41 +184,64 @@ const CatalogMenu = () => {
                         <>
                           {id === 1 && (
                             <CatalogMenuButton
-                              {...buttonProps(showClothList)}
+                              {...buttonProps(isActiveList(1))}
                             />
                           )}
                           {id === 2 && (
                             <CatalogMenuButton
-                              {...buttonProps(showAccessoriesList)}
+                              {...buttonProps(isActiveList(2))}
                             />
                           )}
                           {id === 3 && (
                             <CatalogMenuButton
-                              {...buttonProps(showSouvenirsList)}
+                              {...buttonProps(isActiveList(3))}
                             />
                           )}
                           {id === 4 && (
                             <CatalogMenuButton
-                              {...buttonProps(showOfficeList)}
+                              {...buttonProps(isActiveList(4))}
                             />
                           )}
                         </>
                       )}
                       {!isMedia450 && (
                         <AnimatePresence>
-                          {isCurrentList(showClothList, 1) && (
+                          {isCurrentList(isActiveList(1), 1) && (
                             <CatalogMenuList items={items} />
                           )}
-                          {isCurrentList(showAccessoriesList, 2) && (
+                          {isCurrentList(isActiveList(2), 2) && (
                             <CatalogMenuList items={items} />
                           )}
-                          {isCurrentList(showSouvenirsList, 3) && (
+                          {isCurrentList(isActiveList(3), 3) && (
                             <CatalogMenuList items={items} />
                           )}
-                          {isCurrentList(showOfficeList, 4) && (
+                          {isCurrentList(isActiveList(4), 4) && (
                             <CatalogMenuList items={items} />
                           )}
                         </AnimatePresence>
+                      )}
+                      {isMedia450 && (
+                        <Accordion
+                          title={name}
+                          titleClass='btn-reset nav-menu__accordion__item__title'
+                        >
+                          <ul className='list-reset catalog__accordion__list'>
+                            {items.map((item, i) => (
+                              <li
+                                key={i}
+                                className='catalog__accordion__list__item'
+                              >
+                                <Link
+                                  href={item.href}
+                                  className='nav-menu__accordion__item__list__item__link'
+                                  onClick={item.handleCloseMenu}
+                                >
+                                  {item.title}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </Accordion>
                       )}
                     </motion.li>
                   )
